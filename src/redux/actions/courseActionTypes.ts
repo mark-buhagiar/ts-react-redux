@@ -1,15 +1,20 @@
 import Course from '../../models/course';
-import ActionType from './actionType';
+import ActionTypes from './actionTypes';
 
 interface CreateCourseAction {
-    type: typeof ActionType.CREATE_COURSE;
+    type: typeof ActionTypes.CREATE_COURSE;
     course: Course;
 }
 
 interface DeleteCourseAtIndex {
-    type: typeof ActionType.DELETE_COURSE_AT_INDEX;
+    type: typeof ActionTypes.DELETE_COURSE_AT_INDEX;
     index: number;
 }
 
-type CourseActionTypes = CreateCourseAction | DeleteCourseAtIndex;
+interface LoadCoursesSuccess {
+    type: typeof ActionTypes.LOAD_COURSES_SUCCESS;
+    courses: Course[];
+}
+
+type CourseActionTypes = CreateCourseAction | DeleteCourseAtIndex | LoadCoursesSuccess;
 export default CourseActionTypes;

@@ -1,13 +1,14 @@
 import Course from '../../models/course';
 import CourseActionTypes from '../actions/courseActionTypes';
-import ActionType from '../actions/actionType';
+import ActionTypes from '../actions/actionTypes';
+import initialState from './initialState';
 
-const initialState: Course[] = [];
-
-export default function courseReducer(state = initialState, action: CourseActionTypes): Course[] {
+export default function courseReducer(state = initialState.courses, action: CourseActionTypes): Course[] {
     switch (action.type) {
-        case ActionType.CREATE_COURSE:
+        case ActionTypes.CREATE_COURSE:
             return [...state, { ...action.course }];
+        case ActionTypes.LOAD_COURSES_SUCCESS:
+            return [...action.courses];
         default:
             return state;
     }

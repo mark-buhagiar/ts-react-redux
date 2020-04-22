@@ -1,51 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Dispatch } from 'redux';
 import Course from '../../models/course';
+import * as AuthorActions from '../../redux/actions/authorActions';
+import { AuthorThunkAction } from '../../redux/actions/authorActions';
 import * as CourseActions from '../../redux/actions/courseActions';
+import { CourseThunkAction } from '../../redux/actions/courseActions';
 import CourseActionType from '../../redux/actions/courseActionTypes';
 import ApplicationState from '../../redux/states/ApplicationState';
+import CourseList from './CourseList';
+import Author from '../../models/author';
 
 const CoursesPage: React.FC<PropsFromRedux> = (props): JSX.Element => {
-    const [course, setCourse] = useState<Course>(null);
-
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        setCourse({ ...course, title: event.target.value });
-    };
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
-        event.preventDefault();
-        props.createCourse(course);
-    };
+    useEffect(() => {
+        if (props.courses.length === 0) props.loadCourses().catch((error) => console.log(error));
+        if (props.authors.length === 0) props.loadAuthors().catch((error) => console.log(error));
+    }, []);
 
     return (
-        <form onSubmit={handleSubmit}>
+        <>
             <h2>Courses</h2>
-            <h3>Add Course</h3>
-            <input type="text" onChange={handleChange} value={course?.title || ''} />
-            <input type="submit" value="Save" />
-            <h3>Courses</h3>
-            {props.courses.map((course) => (
-                <div key={course.title}>{course.title}</div>
-            ))}
-        </form>
+            <CourseList courses={props.courses} />
+        </>
     );
 };
 
 interface ComponentProps {
     courses: Course[];
+    authors: Author[];
 }
 
+// Own props is unused, but remains here for educational purposes
 const mapStateToProps = (state: ApplicationState, ownProps: ComponentProps): ComponentProps => ({
     ...ownProps,
-    courses: state.courses,
+    courses: state.courses.map((x: Course) => {
+        return {
+            ...x,
+            authorName: state.authors?.find((y: Author) => y.id === 1)?.name ?? '',
+        };
+    }),
+    authors: state.authors,
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mapDispatchToProps = (dispatch: Dispatch<CourseActionType>): any => {
-    return {
-        createCourse: (course: Course): CourseActionType => dispatch(CourseActions.createCourse(course)),
-    };
+const mapDispatchToProps = {
+    createCourse: (course: Course): CourseActionType => CourseActions.createCourse(course),
+    loadCourses: (): CourseThunkAction<Promise<void>> => CourseActions.loadCourses(),
+    loadAuthors: (): AuthorThunkAction<Promise<void>> => AuthorActions.loadAuthors(),
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

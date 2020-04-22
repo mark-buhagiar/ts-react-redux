@@ -12,7 +12,7 @@ export const App: React.FC = (): JSX.Element => {
             <Switch>
                 <Route exact path="/" component={HomePage} />
                 <Route path="/about" component={AboutPage} />
-                <Route path="/coursess" component={CoursesPage} />
+                <Route path="/courses" component={CoursesPage} />
                 <Route path="/" render={(): JSX.Element => <div>404!</div>} />
             </Switch>
         </div>
